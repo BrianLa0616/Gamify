@@ -55,8 +55,8 @@ public class TetrisDrawingSurface extends PApplet {
 		stroke(0);
 		strokeWeight(3);
 		line(300, 100, 300, 550);
-		line(0, 100, 450, 100);
-		line(0, 550, 450, 550);
+		line(0, 100, 440, 100);
+		line(0, 550, 440, 550);
 		line(440, 100, 440, 550);
 
 
@@ -68,21 +68,20 @@ public class TetrisDrawingSurface extends PApplet {
 		text("NEXT", 330, 130);
 
 		text("SCORE", 325, 240);
-		text(score, 330, 265);
+		text(score, 330, 285);
 
 
 
 
 		text("LINES", 330, 320);
 		text("CLEARED", 315, 345);
-		text(linesCleared, 330, 370);
+		text(linesCleared, 330, 390);
 
 		text("ACCURACY", 315, 450);
 		if (linesCleared != 0) {
-			text((int)((double)(10000*correctAnswers/linesCleared))/100.0 + "%", 330, 475);
+			text((int)((double)(10000*correctAnswers/linesCleared))/100.0 + "%", 330, 495);
 		} else {
-			text("NaN", 330, 475);
-
+			text("NaN", 330, 495);
 		}
 		strokeWeight(1);
 		stroke(25);
@@ -365,10 +364,22 @@ public class TetrisDrawingSurface extends PApplet {
 
 		activeIntersecting = false;
 		landed = false;
-		checkIntersecting();
-		if (activeIntersecting) {
-			end = true;
+		for (int i = 0; i < 4; i++) {
+			if (board[activePiece.getY(i)+activePiece.getYShift()][activePiece.getX(i)
+		                                                             + activePiece.getXShift()] > 0) {
+				end = true;
+				
+			}
 		}
+		if (end) {
+			if (linesCleared > 0) {
+				JOptionPane.showMessageDialog(frame, "Your overall accuracy is " + (int)((double)(10000*correctAnswers/linesCleared))/100.0 + "%", "GAME OVER", JOptionPane.INFORMATION_MESSAGE);
+			} else {
+				JOptionPane.showMessageDialog(frame, "You have not cleared any lines", "GAME OVER", JOptionPane.INFORMATION_MESSAGE);
+
+			} 
+		}
+			
 		ghostPiece = new TetrisGamePiece(activePiece.getType());
 		ghostPiece.setFill(200);
 

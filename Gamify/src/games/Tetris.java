@@ -20,12 +20,12 @@ public class Tetris {
 		PSurfaceAWT.SmoothCanvas canvas = (PSurfaceAWT.SmoothCanvas) surf.getNative();
 		JFrame window = (JFrame) canvas.getFrame();
 
-		window.setBounds(300, 50, 440, 600);
+		window.setBounds(300, 50, 447, 600);
 		window.setMinimumSize(new Dimension(200, 100));
 		window.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		window.setResizable(true);
 
-		window.setBounds(300, 50, 440, 600);
+		window.setBounds(300, 50, 447, 600);
 		window.setMinimumSize(new Dimension(200, 100));
 
 		window.setVisible(true);
