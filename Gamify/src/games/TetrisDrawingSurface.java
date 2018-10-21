@@ -1,5 +1,7 @@
 package games;
 
+import javax.swing.JOptionPane;
+
 import base.StudySet;
 import processing.core.PApplet;
 
@@ -7,15 +9,17 @@ public class TetrisDrawingSurface extends PApplet {
 
 	private int board[][] = new int[19][12];
 	private TetrisGamePiece activePiece;
+	private TetrisGamePiece ghostPiece;
 	private int numRepetition;
 	private int score, level;
 	private boolean activeIntersecting, landed, end;
 	private boolean studying;
 	private boolean paused;
+	private int yDown;
 	private StudySet set;
 
 	public TetrisDrawingSurface(String fileName) {
-		// set = new StudySet(fileName);
+		set = new StudySet(fileName);
 		paused = end = studying = false;
 		score = 0;
 		level = 1;
@@ -23,9 +27,12 @@ public class TetrisDrawingSurface extends PApplet {
 			for (int j = 0; j < 18; j++) {
 				board[j][i] = 0;
 			}
-			board[18][i] = 9;
+			board[18][i] = 8;
 		}
 		activePiece = new TetrisGamePiece((int) (Math.random() * 7 + 1));
+		ghostPiece = new TetrisGamePiece(activePiece.getType());
+		ghostPiece.setFill(200);
+//		activePiece = new TetrisGamePiece(6);
 		activeIntersecting = false;
 
 	}
@@ -44,7 +51,7 @@ public class TetrisDrawingSurface extends PApplet {
 
 		textSize(50);
 		fill(0);
-		text("TETRIS", 100, 75);
+		text("TETRIS", 75, 75);
 
 		textSize(20);
 		text("NEXT", 320, 98);
@@ -93,6 +100,13 @@ public class TetrisDrawingSurface extends PApplet {
 			}
 		}
 
+		activePiece.draw(this);
+		findGhost();
+		ghostPiece.drop(yDown);
+		ghostPiece.draw(this);
+		ghostPiece.drop(-yDown);
+
+
 		if (!paused && !end) {
 			checkIntersecting();
 			if (landed) {
@@ -109,13 +123,13 @@ public class TetrisDrawingSurface extends PApplet {
 				} else {
 					activePiece.drop(1);
 					numRepetition -= 60;
-
 				}
+				
+				
 			}
 			numRepetition++;
 
 		}
-		activePiece.draw(this);
 
 	}
 
@@ -126,14 +140,14 @@ public class TetrisDrawingSurface extends PApplet {
 		if (key == 'p') {
 			paused = !paused;
 		}
-		if (!paused) {
+		if (!paused && !end) {
 			if (key == ' ') {
 				boolean translatable = true;
 				landed = true;
 				while (translatable) {
 					for (int i = 0; i < 4; i++) {
 						if (board[activePiece.getY(i) + activePiece.getYShift() + 1][activePiece.getX(i)
-								+ activePiece.getXShift()] > 0) {
+						                                                             + activePiece.getXShift()] > 0) {
 							translatable = false;
 						}
 					}
@@ -149,12 +163,13 @@ public class TetrisDrawingSurface extends PApplet {
 					for (int i = 0; i < 4; i++) {
 						if (activePiece.getX(i) + activePiece.getXShift() - 1 < 0
 								|| board[activePiece.getY(i) + activePiece.getYShift()][activePiece.getX(i)
-										+ activePiece.getXShift() - 1] > 0) {
+								                                                        + activePiece.getXShift() - 1] > 0) {
 							translatable = false;
 						}
 					}
 					if (translatable) {
 						activePiece.translateX(-1);
+						ghostPiece.translateX(-1);
 					}
 				}
 
@@ -162,47 +177,113 @@ public class TetrisDrawingSurface extends PApplet {
 					for (int i = 0; i < 4; i++) {
 						if (activePiece.getX(i) + activePiece.getXShift() + 1 > 11
 								|| board[activePiece.getY(i) + activePiece.getYShift()][activePiece.getX(i)
-										+ activePiece.getXShift() + 1] > 0) {
+								                                                        + activePiece.getXShift() + 1] > 0) {
 							translatable = false;
 						}
 					}
 					if (translatable) {
 						activePiece.translateX(1);
+						ghostPiece.translateX(1);
 					}
-				} else if (keyCode == UP) {
+				} 
+				else if (keyCode == UP) {
 					if (activePiece.getType() == 6) {
 						for (int i = 0; i < 4; i++) {
 							if (1 - activePiece.getY(i) + activePiece.getXShift() < 0) {
 								activePiece.translateX(0 - (1 - activePiece.getY(i) + activePiece.getXShift()));
-							} else if (1 - activePiece.getY(i) + activePiece.getXShift() > 11) {
+								ghostPiece.translateX(0 - (1 - activePiece.getY(i) + activePiece.getXShift()));
+
+							} 
+							else if (1 - activePiece.getY(i) + activePiece.getXShift() > 11) {
 								activePiece.translateX(11 - (1 - activePiece.getY(i) + activePiece.getXShift()));
+								ghostPiece.translateX(11 - (1 - activePiece.getY(i) + activePiece.getXShift()));
+
 							}
 
 							if (activePiece.getX(i) + activePiece.getYShift() < 0) {
 								activePiece.drop(0 - (activePiece.getX(i) + activePiece.getYShift()));
-							}
 
+							}
+							else if (activePiece.getX(i) + activePiece.getYShift() > 17) {
+								activePiece.drop(17 - (activePiece.getX(i) + activePiece.getYShift()));
+
+							}
 						}
-						activePiece.rotate(1);
+
+//						for (int i = 0; i < 4; i++) { 
+//							while (board[activePiece.getX(i) + activePiece.getYShift()][1 - activePiece.getY(i) + activePiece.getXShift()] > 0) {
+//								if (activePiece.getX(i)+activePiece.getXShift() > 1 - activePiece.getY(i) + activePiece.getXShift()) {
+//									activePiece.translateX(1);
+//								}
+//								else if (activePiece.getX(i)+activePiece.getXShift() < 1 - activePiece.getY(i) + activePiece.getXShift()) {
+//									activePiece.translateX(-1);
+//								}
+//								activePiece.translateX(1);
+//							}
+//						}
+						for (int i = 0; i < 4; i++) {
+							if (board[activePiece.getX(i) + activePiece.getYShift()][1 - activePiece.getY(i) + activePiece.getXShift()] > 0) {
+								translatable = false;
+							}
+						}
+
+
+						if (translatable) {
+							activePiece.rotate(1);
+							ghostPiece.rotate(1);
+						}
+
 					} else {
 						for (int i = 0; i < 4; i++) {
 							if (2 - activePiece.getY(i) + activePiece.getXShift() < 0) {
 								activePiece.translateX(0 - (2 - activePiece.getY(i) + activePiece.getXShift()));
-							} else if (2 - activePiece.getY(i) + activePiece.getXShift() > 11) {
+								ghostPiece.translateX(0 - (2 - activePiece.getY(i) + activePiece.getXShift()));
+
+							} 
+							else if (2 - activePiece.getY(i) + activePiece.getXShift() > 11) {
 								activePiece.translateX(11 - (2 - activePiece.getY(i) + activePiece.getXShift()));
+								ghostPiece.translateX(11 - (2 - activePiece.getY(i) + activePiece.getXShift()));
+
 							}
 
 							if (activePiece.getX(i) + activePiece.getYShift() < 0) {
 								activePiece.drop(0 - (activePiece.getX(i) + activePiece.getYShift()));
-							}
 
+							}
+							else if (activePiece.getX(i) + activePiece.getYShift() > 17) {
+
+								activePiece.drop(17 - (activePiece.getX(i) + activePiece.getYShift()));
+
+							}
 						}
-						activePiece.rotate(1);
+//						for (int i = 0; i < 4; i++) { 
+//							while (board[activePiece.getX(i) + activePiece.getYShift()][2 - activePiece.getY(i) + activePiece.getXShift()] > 0) {
+//								if (activePiece.getX(i)+activePiece.getXShift() > 2 - activePiece.getY(i) + activePiece.getXShift()) {
+//									activePiece.translateX(1);
+//								}
+//								else if (activePiece.getX(i)+activePiece.getXShift() < 2 - activePiece.getY(i) + activePiece.getXShift()) {
+//									activePiece.translateX(-1);
+//								}
+//								activePiece.translateX(1);
+//							}
+//						}
+						for (int i = 0; i < 4; i++) {
+							if (board[activePiece.getX(i) + activePiece.getYShift()][2 - activePiece.getY(i) + activePiece.getXShift()] > 0) {
+								translatable = false;
+							}
+						}
+
+
+						if (translatable) {
+							activePiece.rotate(1);
+							ghostPiece.rotate(1);
+						}
 					}
-				} else if (keyCode == DOWN) {
+				} 
+				else if (keyCode == DOWN) {
 					for (int i = 0; i < 4; i++) {
 						if (board[activePiece.getY(i) + activePiece.getYShift() + 1][activePiece.getX(i)
-								+ activePiece.getXShift()] > 0) {
+						                                                             + activePiece.getXShift()] > 0) {
 							translatable = false;
 						}
 					}
@@ -211,35 +292,36 @@ public class TetrisDrawingSurface extends PApplet {
 						activePiece.drop(1);
 					}
 				}
+
 			}
 		}
 	}
 
-	public void checkIntersecting() {
+
+	private void checkIntersecting() {
 		activeIntersecting = false;
 
 		for (int i = 0; i < 4; i++) {
-			// System.out.println(activePiece.getY(i)+activePiece.getYShift()+1);
 			if (board[activePiece.getY(i) + activePiece.getYShift() + 1][activePiece.getX(i)
-					+ activePiece.getXShift()] > 0) {
+			                                                             + activePiece.getXShift()] > 0) {
 				activeIntersecting = true;
 			}
 		}
 
 	}
 
-	public void clearLine(int number) {
+	private void clearLine(int number) {
+		
 		for (int i = number; i >= 1; i--) {
 			for (int j = 0; j < 12; j++) {
 				board[i][j] = board[i - 1][j];
 			}
-		}
-
+		}                   
 	}
 
-	public void reset() {
-		activePiece = new TetrisGamePiece((int) (Math.random() * 7 + 1));
-		// activePiece = new TetrisGamePiece(6);
+	private void reset() {
+				activePiece = new TetrisGamePiece((int) (Math.random() * 7 + 1));
+//		activePiece = new TetrisGamePiece(6);
 
 		activeIntersecting = false;
 		landed = false;
@@ -247,9 +329,12 @@ public class TetrisDrawingSurface extends PApplet {
 		if (activeIntersecting) {
 			end = true;
 		}
+		ghostPiece = new TetrisGamePiece(activePiece.getType());
+		ghostPiece.setFill(200);
+
 	}
 
-	public void checkFullLine() {
+	private void checkFullLine() {
 		for (int i = 0; i < 18; i++) {
 			boolean fullLine = true;
 			for (int j = 0; j < 12; j++) {
@@ -258,7 +343,35 @@ public class TetrisDrawingSurface extends PApplet {
 				}
 			}
 			if (fullLine) {
-				clearLine(i);
+				int index =(int) (Math.random()*set.size());
+				studying = true;
+				String answer = (String) JOptionPane.showInputDialog(frame, "Question: " + set.getTermAt(index), "Problem", JOptionPane.PLAIN_MESSAGE, null, null, " ");
+				if (answer.equalsIgnoreCase(set.getDefinitionAt(index))) {
+					clearLine(i);
+					score++;
+				} else {
+					// They got it wrong
+					JOptionPane.showMessageDialog(frame, "Incorrect! Term/Phrase: " + set.getTermAt(index) + "  Your Answer: " + answer + "  The Correct Answer: " + set.getDefinitionAt(index), "Incorrect", JOptionPane.INFORMATION_MESSAGE);
+					reset();
+					clearLine(i);
+					score--;
+				}
+			}
+		}
+	}
+	
+	public void findGhost() {
+		boolean movable = true;
+		yDown = 0;
+		while (movable) {
+			for(int i = 0; i < 4; i++) {
+				if (board[ghostPiece.getY(i) + ghostPiece.getYShift() + 1 + yDown][ghostPiece.getX(i)
+				                                                             + ghostPiece.getXShift()] > 0) {
+					movable = false;
+				}
+			}
+			if (movable) {
+				yDown++;
 			}
 		}
 	}

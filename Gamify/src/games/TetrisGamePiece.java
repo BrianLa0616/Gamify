@@ -188,4 +188,8 @@ public class TetrisGamePiece {
 		return type;
 	}
 	
+	public void setFill(int x) {
+		r = g = b = x;
+	}
+	
 }

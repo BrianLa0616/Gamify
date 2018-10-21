@@ -1,4 +1,5 @@
 package base;
+
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
@@ -7,7 +8,7 @@ import java.util.ArrayList;
 
 public class StudySet {
 
-	public ArrayList<Term> set;
+	private ArrayList<Term> set;
 	private BufferedReader reader;
 
 	public StudySet(String fileName) {
@@ -23,12 +24,11 @@ public class StudySet {
 			for (String line = reader.readLine(); line != null && line != ""; line = reader.readLine()) {
 				entry = line.split(":");
 				set.add(new Term(entry[0], entry[1]));
-				System.out.println(line);
 			}
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		
+
 	}
 
 	public String getDefinitionAt(String term) {
@@ -44,6 +44,10 @@ public class StudySet {
 		return definition;
 	}
 
+	public String getDefinitionAt(int index) {
+		return set.get(index).getDefinition();
+	}
+
 	public String getTermAt(String definition) {
 		String term = "";
 
@@ -55,6 +59,14 @@ public class StudySet {
 		}
 
 		return term;
+	}
+
+	public String getTermAt(int index) {
+		return set.get(index).getTerm();
+	}
+
+	public int size() {
+		return set.size();
 	}
 
 }
