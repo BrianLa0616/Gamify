@@ -62,7 +62,7 @@ public class TetrisDrawingSurface extends PApplet {
 
 		textSize(50);
 		fill(0);
-		text("TETRIS", 75, 75);
+		text("TETRIS", 110, 75);
 
 		textSize(20);
 		text("NEXT", 330, 130);
@@ -372,12 +372,21 @@ public class TetrisDrawingSurface extends PApplet {
 			}
 		}
 		if (end) {
+			Object[] options = {"Play Again", "Exit Tetris"};
+           
+			int choice;
+			
 			if (linesCleared > 0) {
-				JOptionPane.showMessageDialog(frame, "Your overall accuracy is " + (int)((double)(10000*correctAnswers/linesCleared))/100.0 + "%", "GAME OVER", JOptionPane.INFORMATION_MESSAGE);
+				choice = JOptionPane.showOptionDialog(frame, "You have achieved a score of " + score + " and accuracy of " + (int)((double)(10000*correctAnswers/linesCleared))/100.0 + "%", "GAME OVER", JOptionPane.YES_NO_OPTION, JOptionPane.INFORMATION_MESSAGE, null, options, options[0]);
 			} else {
-				JOptionPane.showMessageDialog(frame, "You have not cleared any lines", "GAME OVER", JOptionPane.INFORMATION_MESSAGE);
-
+				choice = JOptionPane.showOptionDialog(frame, "You have achieved a score of " + score + ", but have not cleared any lines", "GAME OVER", JOptionPane.YES_NO_OPTION, JOptionPane.INFORMATION_MESSAGE, null, options, options[0]);
 			} 
+			
+			if (choice == JOptionPane.YES_OPTION) {
+				restart();
+			} else {
+				System.exit(0);
+			}
 		}
 			
 		ghostPiece = new TetrisGamePiece(activePiece.getType());
@@ -430,6 +439,31 @@ public class TetrisDrawingSurface extends PApplet {
 			if (movable) {
 				yDown++;
 			}
+		}
+	}
+	
+	public void restart() {
+		paused = end = studying = false;
+		score = 0;
+		level = 1;
+		for (int i = 0; i < 12; i++) {
+			for (int j = 0; j < 18; j++) {
+				board[j][i] = 0;
+			}
+			board[18][i] = 8;
+		}
+		activePiece = new TetrisGamePiece((int) (Math.random() * 7 + 1));
+		//		activePiece = new TetrisGamePiece(6);
+
+		ghostPiece = new TetrisGamePiece(activePiece.getType());
+		ghostPiece.setFill(200);
+		activeIntersecting = false;
+
+		nextPiece = new TetrisGamePiece((int) (Math.random() * 7 + 1));
+		nextPiece.translateX(8);
+		nextPiece.drop(2);
+		if (nextPiece.getType()==6) {
+			nextPiece.translateX(1);
 		}
 	}
 }
