@@ -10,6 +10,7 @@ public class TetrisDrawingSurface extends PApplet {
 	private int board[][] = new int[19][12];
 	private TetrisGamePiece activePiece;
 	private TetrisGamePiece ghostPiece;
+	private TetrisGamePiece nextPiece;
 	private int numRepetition;
 	private int score, level;
 	private boolean activeIntersecting, landed, end;
@@ -30,10 +31,18 @@ public class TetrisDrawingSurface extends PApplet {
 			board[18][i] = 8;
 		}
 		activePiece = new TetrisGamePiece((int) (Math.random() * 7 + 1));
+		//		activePiece = new TetrisGamePiece(6);
+
 		ghostPiece = new TetrisGamePiece(activePiece.getType());
 		ghostPiece.setFill(200);
-		//		activePiece = new TetrisGamePiece(6);
 		activeIntersecting = false;
+
+		nextPiece = new TetrisGamePiece((int) (Math.random() * 7 + 1));
+		nextPiece.translateX(8);
+		nextPiece.drop(2);
+		if (nextPiece.getType()==6) {
+			nextPiece.translateX(1);
+		}
 
 	}
 
@@ -125,6 +134,8 @@ public class TetrisDrawingSurface extends PApplet {
 		ghostPiece.drop(-yDown);
 		activePiece.draw(this);
 
+		nextPiece.draw(this);
+
 		if (!paused && !end) {
 			checkIntersecting();
 			if (landed) {
@@ -213,23 +224,23 @@ public class TetrisDrawingSurface extends PApplet {
 						for (int i = 0; i < 4; i++) {
 							if (1 - activePiece.getY(i) + activePiece.getXShift() < 0) {
 								activePiece.translateX(0 - (1 - activePiece.getY(i) + activePiece.getXShift()));
-								ghostPiece.translateX(0 - (1 - activePiece.getY(i) + activePiece.getXShift()));
+								ghostPiece.translateX(0 - (1 - ghostPiece.getY(i) + ghostPiece.getXShift()));
 
 							} 
 							else if (1 - activePiece.getY(i) + activePiece.getXShift() > 11) {
 								activePiece.translateX(11 - (1 - activePiece.getY(i) + activePiece.getXShift()));
-								ghostPiece.translateX(11 - (1 - activePiece.getY(i) + activePiece.getXShift()));
+								ghostPiece.translateX(11 - (1 - ghostPiece.getY(i) + ghostPiece.getXShift()));
 
 							}
 
 							if (activePiece.getX(i) + activePiece.getYShift() < 0) {
 								activePiece.drop(0 - (activePiece.getX(i) + activePiece.getYShift()));
-								ghostPiece.drop(0 - (activePiece.getX(i) + activePiece.getYShift()));
+								ghostPiece.drop(0 - (ghostPiece.getX(i) + ghostPiece.getYShift()));
 
 							}
 							else if (activePiece.getX(i) + activePiece.getYShift() > 17) {
 								activePiece.drop(17 - (activePiece.getX(i) + activePiece.getYShift()));
-								ghostPiece.drop(17 - (activePiece.getX(i) + activePiece.getYShift()));
+								ghostPiece.drop(17 - (ghostPiece.getX(i) + ghostPiece.getYShift()));
 
 							}
 						}
@@ -261,24 +272,24 @@ public class TetrisDrawingSurface extends PApplet {
 						for (int i = 0; i < 4; i++) {
 							if (2 - activePiece.getY(i) + activePiece.getXShift() < 0) {
 								activePiece.translateX(0 - (2 - activePiece.getY(i) + activePiece.getXShift()));
-								ghostPiece.translateX(0 - (2 - activePiece.getY(i) + activePiece.getXShift()));
+								ghostPiece.translateX(0 - (2 - ghostPiece.getY(i) + ghostPiece.getXShift()));
 
 							} 
 							else if (2 - activePiece.getY(i) + activePiece.getXShift() > 11) {
 								activePiece.translateX(11 - (2 - activePiece.getY(i) + activePiece.getXShift()));
-								ghostPiece.translateX(11 - (2 - activePiece.getY(i) + activePiece.getXShift()));
+								ghostPiece.translateX(11 - (2 - ghostPiece.getY(i) + ghostPiece.getXShift()));
 
 							}
 
 							if (activePiece.getX(i) + activePiece.getYShift() < 0) {
 								activePiece.drop(0 - (activePiece.getX(i) + activePiece.getYShift()));
-								ghostPiece.drop(0 - (activePiece.getX(i) + activePiece.getYShift()));
+								ghostPiece.drop(0 - (ghostPiece.getX(i) + ghostPiece.getYShift()));
 
 							}
 							else if (activePiece.getX(i) + activePiece.getYShift() > 17) {
 
 								activePiece.drop(17 - (activePiece.getX(i) + activePiece.getYShift()));
-								ghostPiece.drop(17 - (activePiece.getX(i) + activePiece.getYShift()));
+								ghostPiece.drop(17 - (ghostPiece.getX(i) + ghostPiece.getYShift()));
 
 							}
 						}
@@ -349,8 +360,8 @@ public class TetrisDrawingSurface extends PApplet {
 	}
 
 	private void reset() {
-		activePiece = new TetrisGamePiece((int) (Math.random() * 7 + 1));
-		//		activePiece = new TetrisGamePiece(6);
+		//		activePiece = new TetrisGamePiece((int) (Math.random() * 7 + 1));
+		activePiece = new TetrisGamePiece(nextPiece.getType());
 
 		activeIntersecting = false;
 		landed = false;
@@ -360,6 +371,13 @@ public class TetrisDrawingSurface extends PApplet {
 		}
 		ghostPiece = new TetrisGamePiece(activePiece.getType());
 		ghostPiece.setFill(200);
+
+		nextPiece = new TetrisGamePiece((int) (Math.random() * 7 + 1));
+		nextPiece.translateX(8);
+		nextPiece.drop(2);
+		if (nextPiece.getType()==6) {
+			nextPiece.translateX(1);
+		}
 
 	}
 
@@ -374,19 +392,15 @@ public class TetrisDrawingSurface extends PApplet {
 			if (fullLine) {
 				score += 50;
 				int index =(int) (Math.random()*set.size());
-				studying = true;
 				linesCleared++;
+				clearLine(i);
 				String answer = (String) JOptionPane.showInputDialog(frame, "Question: " + set.getTermAt(index), "Problem", JOptionPane.PLAIN_MESSAGE, null, null, " ");
 				if (answer.equalsIgnoreCase(set.getDefinitionAt(index))) {
-					clearLine(i);
 					correctAnswers++;
 					score+=50;
 
 				} else {
-					// They got it wrong
 					JOptionPane.showMessageDialog(frame, "Incorrect! Term/Phrase: " + set.getTermAt(index) + "  Your Answer: " + answer + "  The Correct Answer: " + set.getDefinitionAt(index), "Incorrect", JOptionPane.INFORMATION_MESSAGE);
-					reset();
-					clearLine(i);
 				}
 			}
 		}
