@@ -58,7 +58,10 @@ public class TetrisDrawingSurface extends PApplet {
 		line(0, 100, 440, 100);
 		line(0, 550, 440, 550);
 		line(440, 100, 440, 550);
-
+		
+		textSize(10);
+		fill(0);
+		text("left arrow key - left, right - right, up - rotate, down - soft drop, space - hard drop", 10, 10);
 
 		textSize(50);
 		fill(0);
@@ -219,27 +222,22 @@ public class TetrisDrawingSurface extends PApplet {
 					}
 				} 
 				else if (keyCode == UP) {
+					int xShift, yShift;
+					xShift = yShift = 0;
 					if (activePiece.getType() == 6) {
 						for (int i = 0; i < 4; i++) {
 							if (1 - activePiece.getY(i) + activePiece.getXShift() < 0) {
-								activePiece.translateX(0 - (1 - activePiece.getY(i) + activePiece.getXShift()));
-								ghostPiece.translateX(0 - (1 - ghostPiece.getY(i) + ghostPiece.getXShift()));
-
+								xShift = 0 - (1 - activePiece.getY(i) + activePiece.getXShift());
 							} 
 							else if (1 - activePiece.getY(i) + activePiece.getXShift() > 11) {
-								activePiece.translateX(11 - (1 - activePiece.getY(i) + activePiece.getXShift()));
-								ghostPiece.translateX(11 - (1 - ghostPiece.getY(i) + ghostPiece.getXShift()));
-
+								xShift = (11 - (1 - activePiece.getY(i) + activePiece.getXShift()));
 							}
 
 							if (activePiece.getX(i) + activePiece.getYShift() < 0) {
-								activePiece.drop(0 - (activePiece.getX(i) + activePiece.getYShift()));
-								ghostPiece.drop(0 - (ghostPiece.getX(i) + ghostPiece.getYShift()));
-
+								yShift = (0 - (activePiece.getX(i) + activePiece.getYShift()));
 							}
 							else if (activePiece.getX(i) + activePiece.getYShift() > 17) {
-								activePiece.drop(17 - (activePiece.getX(i) + activePiece.getYShift()));
-								ghostPiece.drop(17 - (ghostPiece.getX(i) + ghostPiece.getYShift()));
+								yShift = (17 - (activePiece.getX(i) + activePiece.getYShift()));
 
 							}
 						}
@@ -256,13 +254,18 @@ public class TetrisDrawingSurface extends PApplet {
 						//							}
 						//						}
 						for (int i = 0; i < 4; i++) {
-							if (board[activePiece.getX(i) + activePiece.getYShift()][1 - activePiece.getY(i) + activePiece.getXShift()] > 0) {
+							if (board[activePiece.getX(i) + activePiece.getYShift()+yShift][1 - activePiece.getY(i) + activePiece.getXShift()+xShift] > 0) {
 								translatable = false;
 							}
 						}
 
 
 						if (translatable) {
+							activePiece.translateX(xShift);
+							activePiece.drop(yShift);
+							
+							ghostPiece.translateX(xShift);
+							ghostPiece.drop(yShift);
 							activePiece.rotate(1);
 							ghostPiece.rotate(1);
 						}
@@ -270,25 +273,20 @@ public class TetrisDrawingSurface extends PApplet {
 					} else {
 						for (int i = 0; i < 4; i++) {
 							if (2 - activePiece.getY(i) + activePiece.getXShift() < 0) {
-								activePiece.translateX(0 - (2 - activePiece.getY(i) + activePiece.getXShift()));
-								ghostPiece.translateX(0 - (2 - ghostPiece.getY(i) + ghostPiece.getXShift()));
+								xShift = (0 - (2 - activePiece.getY(i) + activePiece.getXShift()));
 
 							} 
 							else if (2 - activePiece.getY(i) + activePiece.getXShift() > 11) {
-								activePiece.translateX(11 - (2 - activePiece.getY(i) + activePiece.getXShift()));
-								ghostPiece.translateX(11 - (2 - ghostPiece.getY(i) + ghostPiece.getXShift()));
+								xShift = (11 - (2 - activePiece.getY(i) + activePiece.getXShift()));
 
 							}
 
 							if (activePiece.getX(i) + activePiece.getYShift() < 0) {
-								activePiece.drop(0 - (activePiece.getX(i) + activePiece.getYShift()));
-								ghostPiece.drop(0 - (ghostPiece.getX(i) + ghostPiece.getYShift()));
-
+								yShift = (0 - (activePiece.getX(i) + activePiece.getYShift()));
 							}
 							else if (activePiece.getX(i) + activePiece.getYShift() > 17) {
 
-								activePiece.drop(17 - (activePiece.getX(i) + activePiece.getYShift()));
-								ghostPiece.drop(17 - (ghostPiece.getX(i) + ghostPiece.getYShift()));
+								yShift = (17 - (activePiece.getX(i) + activePiece.getYShift()));
 
 							}
 						}
@@ -304,13 +302,19 @@ public class TetrisDrawingSurface extends PApplet {
 						//							}
 						//						}
 						for (int i = 0; i < 4; i++) {
-							if (board[activePiece.getX(i) + activePiece.getYShift()][2 - activePiece.getY(i) + activePiece.getXShift()] > 0) {
+							if (board[activePiece.getX(i) + activePiece.getYShift()+yShift][2 - activePiece.getY(i) + activePiece.getXShift()+xShift] > 0) {
 								translatable = false;
 							}
 						}
 
 
 						if (translatable) {
+							activePiece.translateX(xShift);
+							activePiece.drop(yShift);
+							
+							ghostPiece.translateX(xShift);
+							ghostPiece.drop(yShift);
+							
 							activePiece.rotate(1);
 							ghostPiece.rotate(1);
 						}
@@ -411,11 +415,13 @@ public class TetrisDrawingSurface extends PApplet {
 			}
 			if (fullLine) {
 				score += 50;
-				int index =(int) (Math.random()*set.size());
 				linesCleared++;
 				clearLine(i);
+
+				int index =(int) (Math.random()*set.size());
 				String answer = (String) JOptionPane.showInputDialog(frame, "Question: " + set.getTermAt(index), "Problem", JOptionPane.PLAIN_MESSAGE, null, null, " ");
-				if (answer.equalsIgnoreCase(set.getDefinitionAt(index))) {
+				answer = answer.trim();
+				if (answer.equalsIgnoreCase(set.getDefinitionAt(index).trim())) {
 					correctAnswers++;
 					score+=50;
 
