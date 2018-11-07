@@ -1,2 +1,0 @@
-hablar:to speak
-bailar:to dance
